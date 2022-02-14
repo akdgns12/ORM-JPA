@@ -23,7 +23,7 @@ public class JpaMain {
          */
         try {
 //            Member findMember = em.find(Member.class, 1L);
-            List<Member> result = em.createQuery("select m from Member as m", Member.class) // JPQL은 테이블이 아니라 객체를 대상으로 잡고 쿼리를 사용
+            List<Member> result = em.createQuery("select m from Member as m", Member.class) // JPQL은 테이블이 아니라 객체를 대상으로 잡고 쿼리를 사용(객체를 대상으로 하는 객체지향 쿼리)
                     .getResultList();
 
             for (Member member : result) {
