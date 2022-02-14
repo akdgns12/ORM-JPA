@@ -23,6 +23,10 @@ public class JpaMain {
          */
         try {
 //            Member findMember = em.find(Member.class, 1L);
+            /*
+               JPQL은 엔티티 객체를 대상으로 쿼리
+               SQL은 데이터베이스 테이블을 대상으로 쿼리
+             */
             List<Member> result = em.createQuery("select m from Member as m", Member.class) // JPQL은 테이블이 아니라 객체를 대상으로 잡고 쿼리를 사용(객체를 대상으로 하는 객체지향 쿼리)
                     .getResultList();
 
