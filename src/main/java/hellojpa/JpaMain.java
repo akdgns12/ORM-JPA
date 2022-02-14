@@ -15,10 +15,14 @@ public class JpaMain {
         EntityTransaction tx = em.getTransaction();
         tx.begin();
 
+        /*
+            JPA를 통해서 앤티티를 가져오면 JPA가 앤티티를 관리한다.
+            JPA가 변경 여부를 트랜잭션 커밋하기 전에 체크하고
+            변경된 부분이 있다면 update쿼리를 날린다
+         */
         try {
             Member findMember = em.find(Member.class, 1L);
-
-            em.remove(findMember);
+            findMember.setName("HelloJPA");
 
             tx.commit();
         } catch (Exception e) {
