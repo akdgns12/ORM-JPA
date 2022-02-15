@@ -29,7 +29,7 @@ public class JpaMain {
                SQL은 데이터베이스 테이블을 대상으로 쿼리
              */
 //            // 객체를 생성한 상태(비영속)
-//            Member member = new Member();
+//           1 Member member = new Member();
 //            member.setId(100L);
 //            member.setName("Hello");
 //
@@ -76,10 +76,10 @@ public class JpaMain {
 //            em.persist(member2);
             // 여기까지 insert sql을 DB에 보내지 않는다
 
-            // 영속 엔티티 조회
-            Member findMember = em.find(Member.class, 150L);
-            // 영속 엔티티 데이터 수정
-            findMember.setName("ZZZZ");
+//            // 영속 엔티티 조회
+//            Member findMember = em.find(Member.class, 150L);
+//            // 영속 엔티티 데이터 수정
+//            findMember.setName("ZZZZ");
 
             // em.persist(findMember); // 이런 코드가 있어야 하지 않을까?
             // -> JPA는 dirty checking(변경감지)을 통해 변경 사항을 일일히 체크하여 변경된 점이 있다면 트랜잭션을 commit하는 시점에 update쿼리를 날려서 변경을 DB에 반영
