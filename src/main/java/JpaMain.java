@@ -1,6 +1,4 @@
-import hellojpa.Book;
-import hellojpa.Member;
-import hellojpa.Team;
+import hellojpa.*;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -18,26 +16,45 @@ public class JpaMain {
         tx.begin();
 
         try {
-            Team team = new Team();
-            team.setName("teamA");
-            em.persist(team);
 
-            Member member1 = new Member();
-            member1.setUsername("member1");
-            member1.setTeam(team);
-            em.persist(member1);
+            Child child1 = new Child();
+            Child child2 = new Child();
+
+            Parent parent = new Parent();
+            parent.addChild(child1);
+            parent.addChild(child2);
+
+            // CASCADE - 영속성 전이를 사용하면 부모 객체만 persist해도 자식 객체까지 모두 persist할 수 있다
+            em.persist(parent);
+//            em.persist(child1);
+//            em.persist(child2);
 
             em.flush();
             em.clear();
 
-            // Member m = em.find(Member.class, member1.get(Id));
+            Parent findParent = em.find(Parent.class, parent.getId());
+            findParent.getChildList().remove(0); // 자식 엔티티를 컬렉션에서 제거(orphanremoval의 기능으로!)
 
-            // 즉시로딩은 JPQL에서 N+1문제를 일으킨다 (쿼리 1개가 나갈떄 추가쿼리가 N개가 나가는 문제)
-            List<Member> members = em.createQuery("select m from Member m", Member.class)
-                    .getResultList();
-
-            // SQL : select * from Member
-            // SQL : select * from Team WHERE TEAM_ID = xxxx
+//            Team team = new Team();
+//            team.setName("teamA");
+//            em.persist(team);
+//
+//            Member member1 = new Member();
+//            member1.setUsername("member1");
+//            member1.setTeam(team);
+//            em.persist(member1);
+//
+//            em.flush();
+//            em.clear();
+//
+//            // Member m = em.find(Member.class, member1.get(Id));
+//
+//            // 즉시로딩은 JPQL에서 N+1문제를 일으킨다 (쿼리 1개가 나갈떄 추가쿼리가 N개가 나가는 문제)
+//            List<Member> members = em.createQuery("select m from Member m", Member.class)
+//                    .getResultList();
+//
+//            // SQL : select * from Member
+//            // SQL : select * from Team WHERE TEAM_ID = xxxx
 
 
             /*
