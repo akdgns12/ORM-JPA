@@ -15,6 +15,17 @@ public class Member extends BaseEntity {
     @Column(name = "USERNAME")
     private String name;
 
+    /**
+     * 가급적 지연로딩만 사용하자!(특히 실무에서)
+     * @ManyToOne, @OneToOne 은 default가 EAGER -> LAZY로 바꿔줘야
+     * 즉시로딩은 예상하지 못한 SQL 쿼리가 나가므로 실무에서는 LAZY로 다 설정해주고
+     * 같이 조회할 필요가 있을 경우에 JPQL - fetch join을 그때마다 사용하자
+     */
+    // 즉시로딩 EAGER를 사용해서 프록시를 사용하지 않고 실제 엔티티를 사용한 ex) Member조회시 항상 Team도 조회해야하는 상황이 많다면 EAGER사용하는 것이 유리
+    @ManyToOne(fetch = FetchType.LAZY) // 지연로딩 LAZY를 사용해서 프록시로 조회 ex) Member와 Team을 같이 조회할 일이 별로 없다면 LAZYf를 사용해 프록시를 통해 Team을 조회하는 것이 유
+    @JoinColumn
+    private Team team;
+
     @OneToMany(mappedBy = "member")
     private List<Order> orders = new ArrayList<>();
 
@@ -40,5 +51,21 @@ public class Member extends BaseEntity {
 
     public void setOrders(List<Order> orders) {
         this.orders = orders;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Team getTeam() {
+        return team;
+    }
+
+    public void setTeam(Team team) {
+        this.team = team;
     }
 }
