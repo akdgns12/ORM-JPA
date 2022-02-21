@@ -22,7 +22,13 @@ public class Parent {
     // orphanRemoval
     // 참조가 제거된 엔티티는 다른 곳에서 참조하지 않는 고아객체로 보고 삭제하는 기능
     // 참조하는 곳이 하나일 떄 사용해야함!!, 특정 엔티티가 개인 쇼유할 떄 사용!!
-    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true) // orphanRemoval - 고아 객체(부모-자식 관계에서 부모엔티티와 연관계계가 끊긴 자식엔티티)를 자동 삭제해주는 기능
+
+    // 그렇다면 영속성 전이 + 고아객체, 생명주기
+    // cascade.TYPE.ALL + orphanRemoval = true
+    // 스스로 생명주기를 관리하는 엔티티는 em.persist()로 영속화, em.remove()로 제거
+    // 두 옵션을 모두 활성화 하면 부모 엔티티를 통해서 자식의 생명주기를 관리할 수 있음
+    // 이러한 점은 도메인 주도 설계(DDD)의 Aggregate Root개념을 구현할 떄 유용
+   @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true) // orphanRemoval - 고아 객체(부모-자식 관계에서 부모엔티티와 연관계계가 끊긴 자식엔티티)를 자동 삭제해주는 기능
     private List<Child> childList = new ArrayList<>();
 
     public void addChild(Child child) {
