@@ -17,23 +17,29 @@ public class JpaMain {
 
         try {
 
-            Child child1 = new Child();
-            Child child2 = new Child();
+            Member member = new Member();
+            member.setUsername("hello");
+            member.setHomeAddress(new Address("wonju","seonamdaero","1318-1"));
+            member.setWorkPeriod(new Period());
 
-            Parent parent = new Parent();
-            parent.addChild(child1);
-            parent.addChild(child2);
-
-            // CASCADE - 영속성 전이를 사용하면 부모 객체만 persist해도 자식 객체까지 모두 persist할 수 있다
-            em.persist(parent);
-//            em.persist(child1);
-//            em.persist(child2);
-
-            em.flush();
-            em.clear();
-
-            Parent findParent = em.find(Parent.class, parent.getId());
-            findParent.getChildList().remove(0); // 자식 엔티티를 컬렉션에서 제거(orphanremoval의 기능으로!)
+            em.persist(member);
+//            Child child1 = new Child();
+//            Child child2 = new Child();
+//
+//            Parent parent = new Parent();
+//            parent.addChild(child1);
+//            parent.addChild(child2);
+//
+//            // CASCADE - 영속성 전이를 사용하면 부모 객체만 persist해도 자식 객체까지 모두 persist할 수 있다
+//            em.persist(parent);
+////            em.persist(child1);
+////            em.persist(child2);
+//
+//            em.flush();
+//            em.clear();
+//
+//            Parent findParent = em.find(Parent.class, parent.getId());
+//            findParent.getChildList().remove(0); // 자식 엔티티를 컬렉션에서 제거(orphanremoval의 기능으로!)
 
 //            Team team = new Team();
 //            team.setName("teamA");

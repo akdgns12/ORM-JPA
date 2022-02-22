@@ -2,11 +2,12 @@ package hellojpa;
 
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-public class Member extends BaseEntity {
+public class Member {
 
     @Id @GeneratedValue
     @Column(name = "MEMBER_ID")
@@ -28,6 +29,43 @@ public class Member extends BaseEntity {
 
     @OneToMany(mappedBy = "member")
     private List<Order> orders = new ArrayList<>();
+
+    //기간 - Period
+    @Embedded // 값타입을 사용하는 곳에 표시, 참고로 임베디드 값타입이 null이면 매핑한 컬럼 모두 null
+    private Period workPeriod;
+
+    //주소 - Address
+    @Embedded
+    private Address homeAddress;
+
+    // 한 엔티티에서 같은 값 타입을 사용하려면?
+    // 컬럼 명이 중복됨 -> 그래서 @AttributeOverride: 속성 재정의 어노테이션 사용하면 가능
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "city",
+            column = @Column(name = "WORK_CITY")),
+            @AttributeOverride(name = "street",
+                    column = @Column(name = "WORK_STREET")),
+            @AttributeOverride(name = "zipcode",
+                    column = @Column(name = "WORK_ZIPCODE"))
+        })
+    private Address workAddress;
+
+    public Period getWorkPeriod() {
+        return workPeriod;
+    }
+
+    public void setWorkPeriod(Period workPeriod) {
+        this.workPeriod = workPeriod;
+    }
+
+    public Address getHomeAddress() {
+        return homeAddress;
+    }
+
+    public void setHomeAddress(Address homeAddress) {
+        this.homeAddress = homeAddress;
+    }
 
     public Long getId() {
         return id;
