@@ -16,13 +16,26 @@ public class JpaMain {
         tx.begin();
 
         try {
+            Address address = new Address("city", "street", "10000");
 
             Member member = new Member();
-            member.setUsername("hello");
-            member.setHomeAddress(new Address("wonju","seonamdaero","1318-1"));
-            member.setWorkPeriod(new Period());
-
+            member.setUsername("member");
+            member.setHomeAddress(address);
             em.persist(member);
+
+            //그래서 값타입의 실제 인스턴스인 값을 공유하는 것은 위험하기 때문에
+            //이런식으로 값(인스턴스)를 복사해서 사
+            Address copyAddress = new Address(address.getCity(), address.getStreet(), address.getZipcode());
+
+            Member member2 = new Member();
+            member2.setUsername("member");
+            member2.setHomeAddress(copyAddress);
+            em.persist(member2);
+
+            //개발자는 member의 city만 바꾸고자 했겠지만 같은 address(임베디드 값타입)을 사용하고 있는 member2의 city까지 바뀐다
+            //임베디드 타입 같은 값타입을 여러 엔티티에서 공유하면 위험함 - 부작용 발
+            member.getHomeAddress().setCity("newCity");
+
 //            Child child1 = new Child();
 //            Child child2 = new Child();
 //

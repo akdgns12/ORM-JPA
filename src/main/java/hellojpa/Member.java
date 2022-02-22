@@ -38,18 +38,18 @@ public class Member {
     @Embedded
     private Address homeAddress;
 
-    // 한 엔티티에서 같은 값 타입을 사용하려면?
-    // 컬럼 명이 중복됨 -> 그래서 @AttributeOverride: 속성 재정의 어노테이션 사용하면 가능
-    @Embedded
-    @AttributeOverrides({
-            @AttributeOverride(name = "city",
-            column = @Column(name = "WORK_CITY")),
-            @AttributeOverride(name = "street",
-                    column = @Column(name = "WORK_STREET")),
-            @AttributeOverride(name = "zipcode",
-                    column = @Column(name = "WORK_ZIPCODE"))
-        })
-    private Address workAddress;
+//    // 한 엔티티에서 같은 값 타입을 사용하려면?
+//    // 컬럼 명이 중복됨 -> 그래서 @AttributeOverride: 속성 재정의 어노테이션 사용하면 가능
+//    @Embedded
+//    @AttributeOverrides({
+//            @AttributeOverride(name = "city",
+//            column = @Column(name = "WORK_CITY")),
+//            @AttributeOverride(name = "street",
+//                    column = @Column(name = "WORK_STREET")),
+//            @AttributeOverride(name = "zipcode",
+//                    column = @Column(name = "WORK_ZIPCODE"))
+//        })
+//    private Address workAddress;
 
     public Period getWorkPeriod() {
         return workPeriod;
