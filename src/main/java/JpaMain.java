@@ -4,7 +4,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
+import java.util.ArrayDeque;
 import java.util.List;
+import java.util.Set;
 
 public class JpaMain {
     public static void main(String[] args) {
@@ -16,25 +18,73 @@ public class JpaMain {
         tx.begin();
 
         try {
-            Address address = new Address("city", "street", "10000");
-
             Member member = new Member();
-            member.setUsername("member");
-            member.setHomeAddress(address);
+            member.setName("member1");
+            member.setHomeAddress(new Address("homeCity","street","10000"));
+
+            // 값타입 컬렉션은 : 영속성 전이(CASCADE) + 고아객체 제거를 필수로 가진다고 볼 수 있다. why?
+            // 값타입은 자체적인 생명주기가 없고 Member의 생명주기를 따라가기 때문
+
+            member.getFavoriteFoods().add("치킨");
+            member.getFavoriteFoods().add("족발");
+            member.getFavoriteFoods().add("피자");
+
+            member.getAddressesHistory().add(new AddressEntity("old1", "street", "10000"));
+            member.getAddressesHistory().add(new AddressEntity("old2", "street", "10000"));
+
             em.persist(member);
 
-            //그래서 값타입의 실제 인스턴스인 값을 공유하는 것은 위험하기 때문에
-            //이런식으로 값(인스턴스)를 복사해서 사
-            Address copyAddress = new Address(address.getCity(), address.getStreet(), address.getZipcode());
+            em.flush();
+            em.clear();
 
-            Member member2 = new Member();
-            member2.setUsername("member");
-            member2.setHomeAddress(copyAddress);
-            em.persist(member2);
+            System.out.println("============START==========");
+            Member findMember = em.find(Member.class, member.getId()); //값타입 컬렉션도 지연로딩 전략을 사용한다
 
-            //개발자는 member의 city만 바꾸고자 했겠지만 같은 address(임베디드 값타입)을 사용하고 있는 member2의 city까지 바뀐다
-            //임베디드 타입 같은 값타입을 여러 엔티티에서 공유하면 위험함 - 부작용 발
-            member.getHomeAddress().setCity("newCity");
+            // 값타입 수정
+            //homeCity -> newCity
+//            findMember.getHomeAddress().setCity("newCity");  값타입 수정은 이렇게 하면 안된다!!!! -> 부작용 발생
+            Address a = findMember.getHomeAddress();
+            findMember.setHomeAddress(new Address("newCity", a.getStreet(), a.getZipcode())); // 이렇게 완전히 새로운 인스턴스로 갈아끼워서 수정하는게 맞
+
+            // 값타입 컬렉션 수정
+            // 치킨 -> 한식
+            findMember.getFavoriteFoods().remove("치킨");
+            findMember.getFavoriteFoods().add("한식");
+
+            findMember.getAddressesHistory().remove(new AddressEntity("old1", "street", "10000"));
+            findMember.getAddressesHistory().add(new AddressEntity("newCity1", "street", "10000"));
+
+            // 값타입 조회
+//            List<Address> addressHistory = findMember.getAddressesHistory();
+//            for (Address address : addressHistory) {
+//                System.out.println("address = " + address.getCity());
+//            }
+//
+//            Set<String> favoriteFoods = findMember.getFavoriteFoods();
+//            for (String favoriteFood : favoriteFoods) {
+//                System.out.println("favoriteFood = " + favoriteFood);
+//            }
+
+
+//            Address address = new Address("city", "street", "10000");
+//
+//            Member member = new Member();
+//            member.setUsername("member");
+//            member.setHomeAddress(address);
+//            em.persist(member);
+//
+//            //그래서 값타입의 실제 인스턴스인 값을 공유하는 것은 위험하기 때문에
+//            //이런식으로 값(인스턴스)를 복사해서 사
+//            Address copyAddress = new Address(address.getCity(), address.getStreet(), address.getZipcode());
+//
+//            Member member2 = new Member();
+//            member2.setUsername("member");
+//            member2.setHomeAddress(copyAddress);
+//            em.persist(member2);
+//
+//            //개발자는 member의 city만 바꾸고자 했겠지만 같은 address(임베디드 값타입)을 사용하고 있는 member2의 city까지 바뀐다
+//            //임베디드 타입 같은 값타입을 여러 엔티티에서 공유하면 위험함 - 부작용 발
+//            member.getHomeAddress().setCity("newCity");
 
 //            Child child1 = new Child();
 //            Child child2 = new Child();

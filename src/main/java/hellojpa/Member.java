@@ -4,7 +4,9 @@ package hellojpa;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 public class Member {
@@ -50,6 +52,23 @@ public class Member {
 //                    column = @Column(name = "WORK_ZIPCODE"))
 //        })
 //    private Address workAddress;
+
+    @ElementCollection
+    @CollectionTable(name = "FAVORITE_FOOD", joinColumns =
+            @JoinColumn(name = "MEMBER_ID")
+    )
+    @Column(name = "FOOD_NAME")
+    private Set<String> favoriteFoods = new HashSet<>();
+
+//    @ElementCollection
+//    @CollectionTable(name = "ADDRESS", joinColumns =
+//            @JoinColumn(name = "MEMBER_ID")
+//    )
+//    private List<Address> addressesHistory = new ArrayList<>();
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "MEMBER_ID")
+    private List<AddressEntity> addressesHistory = new ArrayList<>();
 
     public Period getWorkPeriod() {
         return workPeriod;
@@ -105,5 +124,21 @@ public class Member {
 
     public void setTeam(Team team) {
         this.team = team;
+    }
+
+    public Set<String> getFavoriteFoods() {
+        return favoriteFoods;
+    }
+
+    public void setFavoriteFoods(Set<String> favoriteFoods) {
+        this.favoriteFoods = favoriteFoods;
+    }
+
+    public List<AddressEntity> getAddressesHistory() {
+        return addressesHistory;
+    }
+
+    public void setAddressesHistory(List<AddressEntity> addressesHistory) {
+        this.addressesHistory = addressesHistory;
     }
 }
