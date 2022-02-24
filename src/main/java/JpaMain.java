@@ -18,41 +18,50 @@ public class JpaMain {
         tx.begin();
 
         try {
-            Member member = new Member();
-            member.setName("member1");
-            member.setHomeAddress(new Address("homeCity","street","10000"));
+            // JPQL - 테이블이 아닌 앤티티 객체를 대상으로 객체지향 쿼리
+            // SQL을 추상화해서 특정 DB에 의존하지 X
+            // JPQL - 한마디로 정의하면 객체지향 SQL
+            List<Member> result = em.createQuery("select m From Member m where m.username like '%kim'", Member.class)
+                    .getResultList();
 
-            // 값타입 컬렉션은 : 영속성 전이(CASCADE) + 고아객체 제거를 필수로 가진다고 볼 수 있다. why?
-            // 값타입은 자체적인 생명주기가 없고 Member의 생명주기를 따라가기 때문
-
-            member.getFavoriteFoods().add("치킨");
-            member.getFavoriteFoods().add("족발");
-            member.getFavoriteFoods().add("피자");
-
-            member.getAddressesHistory().add(new AddressEntity("old1", "street", "10000"));
-            member.getAddressesHistory().add(new AddressEntity("old2", "street", "10000"));
-
-            em.persist(member);
-
-            em.flush();
-            em.clear();
-
-            System.out.println("============START==========");
-            Member findMember = em.find(Member.class, member.getId()); //값타입 컬렉션도 지연로딩 전략을 사용한다
-
-            // 값타입 수정
-            //homeCity -> newCity
-//            findMember.getHomeAddress().setCity("newCity");  값타입 수정은 이렇게 하면 안된다!!!! -> 부작용 발생
-            Address a = findMember.getHomeAddress();
-            findMember.setHomeAddress(new Address("newCity", a.getStreet(), a.getZipcode())); // 이렇게 완전히 새로운 인스턴스로 갈아끼워서 수정하는게 맞
-
-            // 값타입 컬렉션 수정
-            // 치킨 -> 한식
-            findMember.getFavoriteFoods().remove("치킨");
-            findMember.getFavoriteFoods().add("한식");
-
-            findMember.getAddressesHistory().remove(new AddressEntity("old1", "street", "10000"));
-            findMember.getAddressesHistory().add(new AddressEntity("newCity1", "street", "10000"));
+            for (Member member : result) {
+                System.out.println("member = " + member);
+            }
+//            Member member = new Member();
+//            member.setName("member1");
+//            member.setHomeAddress(new Address("homeCity","street","10000"));
+//
+//            // 값타입 컬렉션은 : 영속성 전이(CASCADE) + 고아객체 제거를 필수로 가진다고 볼 수 있다. why?
+//            // 값타입은 자체적인 생명주기가 없고 Member의 생명주기를 따라가기 때문
+//
+//            member.getFavoriteFoods().add("치킨");
+//            member.getFavoriteFoods().add("족발");
+//            member.getFavoriteFoods().add("피자");
+//
+//            member.getAddressesHistory().add(new AddressEntity("old1", "street", "10000"));
+//            member.getAddressesHistory().add(new AddressEntity("old2", "street", "10000"));
+//
+//            em.persist(member);
+//
+//            em.flush();
+//            em.clear();
+//
+//            System.out.println("============START==========");
+//            Member findMember = em.find(Member.class, member.getId()); //값타입 컬렉션도 지연로딩 전략을 사용한다
+//
+//            // 값타입 수정
+//            //homeCity -> newCity
+////            findMember.getHomeAddress().setCity("newCity");  값타입 수정은 이렇게 하면 안된다!!!! -> 부작용 발생
+//            Address a = findMember.getHomeAddress();
+//            findMember.setHomeAddress(new Address("newCity", a.getStreet(), a.getZipcode())); // 이렇게 완전히 새로운 인스턴스로 갈아끼워서 수정하는게 맞
+//
+//            // 값타입 컬렉션 수정
+//            // 치킨 -> 한식
+//            findMember.getFavoriteFoods().remove("치킨");
+//            findMember.getFavoriteFoods().add("한식");
+//
+//            findMember.getAddressesHistory().remove(new AddressEntity("old1", "street", "10000"));
+//            findMember.getAddressesHistory().add(new AddressEntity("newCity1", "street", "10000"));
 
             // 값타입 조회
 //            List<Address> addressHistory = findMember.getAddressesHistory();
