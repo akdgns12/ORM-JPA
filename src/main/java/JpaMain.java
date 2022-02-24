@@ -1,9 +1,13 @@
 import hellojpa.*;
+import org.hibernate.Criteria;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import java.util.ArrayDeque;
 import java.util.List;
 import java.util.Set;
@@ -18,15 +22,27 @@ public class JpaMain {
         tx.begin();
 
         try {
-            // JPQL - 테이블이 아닌 앤티티 객체를 대상으로 객체지향 쿼리
-            // SQL을 추상화해서 특정 DB에 의존하지 X
-            // JPQL - 한마디로 정의하면 객체지향 SQL
-            List<Member> result = em.createQuery("select m From Member m where m.username like '%kim'", Member.class)
+            //Criteria 사용 준비 - 동적쿼리에 유리하다(자바 코드로 짜는 것이기 때문에), 오타도 컴파일시점에서 잡아주기도 하기때문에
+            //단점은 sql같지가 않고 복잡
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<Member> query = cb.createQuery(Member.class);
+
+            Root<Member> m = query.from(Member.class);
+
+            CriteriaQuery<Member> cq = query.select(m).where(cb.equal(m.get("username"), "kim"));
+            List<Member> resultList = em.createQuery(cq)
                     .getResultList();
 
-            for (Member member : result) {
-                System.out.println("member = " + member);
-            }
+
+//            // JPQL - 테이블이 아닌 앤티티 객체를 대상으로 객체지향 쿼리
+//            // SQL을 추상화해서 특정 DB에 의존하지 X
+//            // JPQL - 한마디로 정의하면 객체지향 SQL
+//            List<Member> result = em.createQuery("select m From Member m where m.username like '%kim'", Member.class)
+//                    .getResultList();
+//
+//            for (Member member : result) {
+//                System.out.println("member = " + member);
+//            }
 //            Member member = new Member();
 //            member.setName("member1");
 //            member.setHomeAddress(new Address("homeCity","street","10000"));
